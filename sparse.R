@@ -72,10 +72,17 @@ dgT2dgCMatrix <- function(x, verbose = TRUE){
 }
 
 #cbind two dgCmatrices
-cbind_dgCMatrices <- function(x, y){ # Object Dimnames are ignored in this function
+cbind_dgCMatrices <- function(x, y){
 	stopifnot(inherits(x, 'dgCMatrix'))
 	stopifnot(inherits(y, 'dgCMatrix'))
 	stopifnot(x@Dim[1] == y@Dim[1])
+	stopifnot(identical(x@Dimnames[[1]], y@Dimnames[[1]]))
+	if(is.null(x@Dimnames[[2]])){
+		if(! is.null(y@Dimnames[[2]])) stop('x has colnames but y has not')
+	}else{
+		if(is.null(y@Dimnames[[2]])) stop('y has colnames but x has not')
+		x@Dimnames[[2]] <- c(x@Dimnames[[2]], y@Dimnames[[2]])
+	}
 	x@i <- c(x@i, y@i)
 	x@p <- c(x@p, x@p[length(x@p)] + y@p[-1])
 	x@x <- c(x@x, y@x)
